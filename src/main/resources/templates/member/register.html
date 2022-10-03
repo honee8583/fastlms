@@ -6,6 +6,9 @@
   </head>
   <body>
     <h1>회원 가입</h1>
+
+    <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
+
     <!--아이디(이메일), 이름, 전화번호, 비밀번호-->
     <form action="" method="post">
       아이디 : <input type="email" name="userId" placeholder="이메일 입력" required/><br>

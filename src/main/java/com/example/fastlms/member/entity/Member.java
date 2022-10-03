@@ -22,7 +22,12 @@ public class Member {
     private String password;
     private LocalDateTime regDt;
 
+    // email auth
     private boolean emailAuthYn;
     private LocalDateTime emailAuthDt;
     private String emailAuthKey;
+
+    // reset password
+    private String resetPasswordKey;
+    private LocalDateTime resetPasswordLimitDt;
 }
