@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
+@ToString
 public class Member {
 
     @Id
@@ -30,4 +31,6 @@ public class Member {
     // reset password
     private String resetPasswordKey;
     private LocalDateTime resetPasswordLimitDt;
+
+    private boolean adminYn;
 }
