@@ -24,4 +24,10 @@ public class MainController { // 논리적 주소와 물리적 주소를 매핑
 
         return "index";
     }
+
+    @RequestMapping("/error/denied")
+    public String errorDenied() {
+
+        return "error/denied";
+    }
 }

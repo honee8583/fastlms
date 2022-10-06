@@ -1,5 +1,8 @@
 package com.example.fastlms.member.service.impl;
 
+import com.example.fastlms.admin.dto.MemberDto;
+import com.example.fastlms.admin.mapper.MemberMapper;
+import com.example.fastlms.admin.model.MemberParam;
 import com.example.fastlms.component.MailComponents;
 import com.example.fastlms.member.entity.Member;
 import com.example.fastlms.member.exception.MemberEmailNotAuthenticatedException;
@@ -15,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +32,8 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MailComponents mailComponents;
+
+    private final MemberMapper memberMapper;
 
     /**
      * 회원 가입
@@ -81,6 +87,12 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = optionalMember.get();
+
+        // 이미 활성화 한적이 있는 경우
+        if (member.isEmailAuthYn()) {
+            return false;
+        }
+
         member.setEmailAuthYn(true);
         member.setEmailAuthDt(LocalDateTime.now());
         memberRepository.save(member);
@@ -178,6 +190,27 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
+    /**
+     * 회원 목록 리턴 (관리자에서만 사용가능)
+     */
+    @Override
+    public List<MemberDto> list(MemberParam parameter) {
+
+        long totalCount = memberMapper.selectListCount(parameter);  // 검색결과개수
+        List<MemberDto> list = memberMapper.selectList(parameter);
+
+        if (!CollectionUtils.isEmpty(list)) {
+            int i = 0;
+            for (MemberDto x: list) {
+                x.setTotalCount(totalCount);
+                x.setSeq(totalCount - parameter.getPageStart() - i);
+                i++;
+            }
+        }
+
+        return list;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> optionalMember = memberRepository.findById(username);
@@ -193,6 +226,10 @@ public class MemberServiceImpl implements MemberService {
 
         List<GrantedAuthority>  grantedAuthorityList = new ArrayList<>();
         grantedAuthorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        if (member.isAdminYn()) {   // 관리자 권한 추가
+            grantedAuthorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
 
         // 아이디, 비밀번호, 권한(Collection<GrantedAuthority>)
         return new User(member.getUserId(),
