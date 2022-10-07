@@ -71,7 +71,11 @@
                 <tbody>
                     <tr th:each="member: ${list}">
                         <td th:text="${member.seq}"></td>
-                        <td th:text="${member.userId}"></td>
+                        <td>
+                            <a th:text="${member.userId}"
+                               th:href="${'detail.do?userId=' + member.userId}">
+                            </a>
+                        </td>
                         <td th:text="${member.userName}"></td>
                         <td th:text="${member.phone}"></td>
                         <td>

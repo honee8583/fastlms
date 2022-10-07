@@ -1,6 +1,5 @@
 package com.example.fastlms.member.controller;
 
-import com.example.fastlms.member.entity.Member;
 import com.example.fastlms.member.model.MemberInput;
 import com.example.fastlms.member.model.ResetPasswordInput;
 import com.example.fastlms.member.service.MemberService;
@@ -10,11 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor

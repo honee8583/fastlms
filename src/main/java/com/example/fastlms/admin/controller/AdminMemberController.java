@@ -2,12 +2,14 @@ package com.example.fastlms.admin.controller;
 
 import com.example.fastlms.admin.dto.MemberDto;
 import com.example.fastlms.admin.model.MemberParam;
+import com.example.fastlms.admin.model.MemberUpdateInput;
 import com.example.fastlms.member.service.MemberService;
 import com.example.fastlms.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -42,5 +44,36 @@ public class AdminMemberController {
         model.addAttribute("pager", pageUtil.pager());  // pager(String)
 
         return "admin/member/list";
+    }
+
+    @GetMapping("/admin/member/detail.do")
+    public String detail(Model model, MemberParam parameter) {
+
+        parameter.init();
+
+        MemberDto memberDto = memberService.detail(parameter.getUserId());
+        model.addAttribute("member", memberDto);
+
+        return "admin/member/detail";
+    }
+
+    @PostMapping("/admin/member/status.do")
+    public String status(Model model, MemberUpdateInput parameter) {
+
+        boolean result =
+                memberService.updateStatus(parameter.getUserId(),
+                        parameter.getUserStatus());
+
+        return "redirect:/admin/member/detail.do?userId=" + parameter.getUserId();
+    }
+
+    @PostMapping("/admin/member/password.do")
+    public String password(Model model, MemberUpdateInput parameter) {
+
+        boolean result =
+                memberService.updatePassword(parameter.getUserId(),
+                        parameter.getPassword());
+
+        return "redirect:/admin/member/detail.do?userId=" + parameter.getUserId();
     }
 }

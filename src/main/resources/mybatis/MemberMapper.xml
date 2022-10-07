@@ -37,9 +37,9 @@
                 </otherwise>
             </choose>
         </if>
-
     </select>
 
+    <!-- 검색결과 + 페이징 결과 -->
     <select id="selectList"
             parameterType="com.example.fastlms.admin.model.MemberParam"
             resultType="com.example.fastlms.admin.dto.MemberDto">
@@ -71,7 +71,6 @@
                 </otherwise>
             </choose>
         </if>
-
         limit #{pageStart}, #{pageEnd}
     </select>
 
