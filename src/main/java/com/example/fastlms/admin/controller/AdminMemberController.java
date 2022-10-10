@@ -3,6 +3,7 @@ package com.example.fastlms.admin.controller;
 import com.example.fastlms.admin.dto.MemberDto;
 import com.example.fastlms.admin.model.MemberParam;
 import com.example.fastlms.admin.model.MemberUpdateInput;
+import com.example.fastlms.course.controller.BaseController;
 import com.example.fastlms.member.service.MemberService;
 import com.example.fastlms.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class AdminMemberController {
+public class AdminMemberController extends BaseController {
 
     private final MemberService memberService;
 
@@ -23,7 +24,6 @@ public class AdminMemberController {
     public String list(Model model, MemberParam parameter) {
 
         parameter.init();
-
         List<MemberDto> memberList = memberService.list(parameter);
 
         long totalCount = 0;
@@ -31,17 +31,14 @@ public class AdminMemberController {
             totalCount = memberList.get(0).getTotalCount();
         }
         String queryString = parameter.getQueryString();
-
-        // pageIndex : 현재 페이지 번호
-        PageUtil pageUtil =
-                new PageUtil(totalCount,
-                        parameter.getPageSize(),
-                        parameter.getPageIndex(),
-                        queryString);
+        String pagerHtml = super.getPagerHtml(totalCount,
+                parameter.getPageSize(),
+                parameter.getPageIndex(),
+                queryString);
 
         model.addAttribute("list", memberList);
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("pager", pageUtil.pager());  // pager(String)
+        model.addAttribute("pager", pagerHtml);  // pager(String)
 
         return "admin/member/list";
     }
