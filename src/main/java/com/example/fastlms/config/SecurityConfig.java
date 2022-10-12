@@ -34,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
 
+        http.headers().frameOptions().sameOrigin(); // smartEditor용 설정
+
         http.authorizeRequests()    // 권한설정
                 .antMatchers("/",
                         "/member/register",

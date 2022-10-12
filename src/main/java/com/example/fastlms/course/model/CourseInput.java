@@ -18,4 +18,7 @@ public class CourseInput {
     private Long price;
     private Long salePrice;
     private String saleEndDtText;
+
+    // 삭제용 칼럼
+    private String idList;
 }

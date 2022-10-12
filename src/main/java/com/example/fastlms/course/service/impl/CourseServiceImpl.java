@@ -27,7 +27,7 @@ public class CourseServiceImpl implements CourseService {
 
     private LocalDate getLocalDate(String value) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try{
+        try {
             return LocalDate.parse(value, formatter);
         } catch (Exception e) {
 
@@ -92,7 +92,7 @@ public class CourseServiceImpl implements CourseService {
 
         if (!CollectionUtils.isEmpty(list)) {
             int i = 0;
-            for (CourseDto x: list) {
+            for (CourseDto x : list) {
                 x.setTotalCount(totalCount);
                 x.setSeq(totalCount - courseParam.getPageStart() - i);
                 i++;
@@ -108,4 +108,26 @@ public class CourseServiceImpl implements CourseService {
                 .map(CourseDto::of).orElse(null);
     }
 
+    @Override
+    public boolean del(String idList) {
+
+        if (idList != null && idList.length() > 0) {
+            String[] ids = idList.split(",");
+
+            for (String x : ids) {
+                long id = 0L;
+                try {
+                    id = Long.parseLong(x);
+                } catch (Exception e) {
+
+                }
+
+                if (id > 0) {
+                    courseRepository.deleteById(id);
+                }
+            }
+        }
+
+        return true;
+    }
 }
