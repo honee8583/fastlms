@@ -3,6 +3,7 @@ package com.example.fastlms.course.dto;
 import com.example.fastlms.course.entity.Course;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 public class CourseDto {
     private Long id;
+    private Long categoryId;
     private String imagePath;
     private String keyword;
     private String subject;
@@ -20,7 +22,7 @@ public class CourseDto {
     private String contents;
     private long price;
     private long salePrice;
-    private LocalDateTime saleEndDt;
+    private LocalDate saleEndDt;
     private LocalDateTime regDt;
     private LocalDateTime upDt;
 
@@ -31,6 +33,7 @@ public class CourseDto {
     public static CourseDto of(Course course) {
         return CourseDto.builder()
                 .id(course.getId())
+                .categoryId(course.getCategoryId())
                 .imagePath(course.getImagePath())
                 .keyword(course.getKeyword())
                 .subject(course.getSubject())

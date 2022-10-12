@@ -1,6 +1,5 @@
 package com.example.fastlms.course.service.impl;
 
-import com.example.fastlms.admin.dto.MemberDto;
 import com.example.fastlms.course.dto.CourseDto;
 import com.example.fastlms.course.entity.Course;
 import com.example.fastlms.course.mapper.CourseMapper;
@@ -9,11 +8,13 @@ import com.example.fastlms.course.model.CourseParam;
 import com.example.fastlms.course.repository.CourseRepository;
 import com.example.fastlms.course.service.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.swing.plaf.ColorUIResource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +25,30 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
+    private LocalDate getLocalDate(String value) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try{
+            return LocalDate.parse(value, formatter);
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
     @Override
     public boolean add(CourseInput courseInput) {
+
+        LocalDate saleEndDt = getLocalDate(courseInput.getSaleEndDtText());
 
         Course course = Course.builder()
                 .categoryId(courseInput.getCategoryId())
                 .subject(courseInput.getSubject())
+                .keyword(courseInput.getKeyword())
+                .summary(courseInput.getSummary())
+                .contents(courseInput.getContents())
+                .price(courseInput.getPrice())
+                .salePrice(courseInput.getSalePrice())
+                .saleEndDt(saleEndDt)
                 .regDt(LocalDateTime.now())
                 .build();
         courseRepository.save(course);
@@ -39,6 +58,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean set(CourseInput courseInput) {
+
+        LocalDate saleEndDt = getLocalDate(courseInput.getSaleEndDtText());
 
         Optional<Course> optionalCourse =
                 courseRepository.findById(courseInput.getId());
@@ -51,6 +72,12 @@ public class CourseServiceImpl implements CourseService {
         Course course = optionalCourse.get();
         course.setCategoryId(courseInput.getCategoryId());
         course.setSubject(courseInput.getSubject());
+        course.setKeyword(courseInput.getKeyword());
+        course.setSummary(courseInput.getSummary());
+        course.setContents(courseInput.getContents());
+        course.setPrice(courseInput.getPrice());
+        course.setSalePrice(courseInput.getSalePrice());
+        course.setSaleEndDt(saleEndDt);
         course.setUpDt(LocalDateTime.now());
 
         courseRepository.save(course);

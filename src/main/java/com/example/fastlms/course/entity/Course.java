@@ -3,6 +3,7 @@ package com.example.fastlms.course.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -36,7 +37,7 @@ public class Course {
 
     private long salePrice;
 
-    private LocalDateTime saleEndDt;
+    private LocalDate saleEndDt;
 
     private LocalDateTime regDt;    // 등록일
     private LocalDateTime upDt;     // 수정일
