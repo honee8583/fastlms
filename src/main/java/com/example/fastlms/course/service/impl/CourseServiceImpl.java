@@ -20,7 +20,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CourseServiceImpl implements CourseService {
+public
+class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
@@ -129,5 +130,25 @@ public class CourseServiceImpl implements CourseService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<CourseDto> frontList(CourseParam courseParam) {
+        // 전체를 요청한경우
+        if (courseParam.getCategoryId() < 1) {
+            List<Course> courseList = courseRepository.findAll();
+            return CourseDto.of(courseList);
+        }
+
+//        return courseRepository.findByCategoryId(courseParam.getCategoryId()).map(CourseDto::of).orElse(null);
+
+        Optional<List<Course>> optionalCourseList =
+                courseRepository.findByCategoryId(courseParam.getCategoryId());
+
+        if (optionalCourseList.isPresent()) {
+            return CourseDto.of(optionalCourseList.get());
+        }
+
+        return null;
     }
 }

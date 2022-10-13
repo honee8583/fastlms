@@ -2,9 +2,11 @@ package com.example.fastlms.admin.service.impl;
 
 import com.example.fastlms.admin.dto.CategoryDto;
 import com.example.fastlms.admin.entity.Category;
+import com.example.fastlms.admin.mapper.CategoryMapper;
 import com.example.fastlms.admin.model.CategoryInput;
 import com.example.fastlms.admin.repository.CategoryRepository;
 import com.example.fastlms.admin.service.CategoryService;
+import com.example.fastlms.course.dto.CourseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     private Sort getSortBySortValueDesc() {
 
@@ -66,9 +69,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean del(long id) {
-
         categoryRepository.deleteById(id);
-
         return true;
+    }
+
+    @Override
+    public List<CategoryDto> frontList(CategoryDto categoryDto) {
+
+
+        return categoryMapper.select(categoryDto);
     }
 }

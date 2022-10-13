@@ -18,6 +18,9 @@ public class CategoryDto {
     private int sortValue;
     private boolean usingYn;
 
+    // ADD COLUMNS
+    private int courseCount;    // 강좌목록페이지로 전달할 카테고리를 사용하고 있는 강좌개수
+
     public static CategoryDto of(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
@@ -28,7 +31,6 @@ public class CategoryDto {
     }
 
     public static List<CategoryDto> of (List<Category> categoryList) {
-
         if (categoryList != null) {
             List<CategoryDto> categoryDtoList = new ArrayList<>();
             for (Category category : categoryList) {
@@ -36,7 +38,6 @@ public class CategoryDto {
             }
             return categoryDtoList;
         }
-
         return null;
     }
 }

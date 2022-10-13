@@ -2,9 +2,12 @@ package com.example.fastlms.course.dto;
 
 import com.example.fastlms.course.entity.Course;
 import lombok.*;
+import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -45,5 +48,18 @@ public class CourseDto {
                 .regDt(course.getRegDt())
                 .upDt(course.getUpDt())
                 .build();
+    }
+
+    public static List<CourseDto> of(List<Course> courseList) {
+        if (courseList == null) {
+            return null;
+        }
+
+        List<CourseDto> courseDtoList = new ArrayList<>();
+        for (Course x: courseList) {
+            courseDtoList.add(CourseDto.of(x));
+        }
+
+        return courseDtoList;
     }
 }
