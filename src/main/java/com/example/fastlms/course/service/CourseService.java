@@ -3,6 +3,8 @@ package com.example.fastlms.course.service;
 import com.example.fastlms.course.dto.CourseDto;
 import com.example.fastlms.course.model.CourseInput;
 import com.example.fastlms.course.model.CourseParam;
+import com.example.fastlms.course.model.ServiceResult;
+import com.example.fastlms.course.model.TakeCourseInput;
 
 import java.util.List;
 
@@ -36,4 +38,14 @@ public interface CourseService {
      * 프론트 쪽 강좌 목록
      */
     List<CourseDto> frontList(CourseParam courseParam);
+
+    /**
+     * 프론트 쪽 강좌 상세 정보
+     */
+    CourseDto frontDetail(long id);
+
+    /**
+     * 수강신청
+     */
+    ServiceResult req(TakeCourseInput takeCourseInput);
 }

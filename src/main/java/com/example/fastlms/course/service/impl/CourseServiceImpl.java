@@ -2,19 +2,23 @@ package com.example.fastlms.course.service.impl;
 
 import com.example.fastlms.course.dto.CourseDto;
 import com.example.fastlms.course.entity.Course;
+import com.example.fastlms.course.entity.TakeCourse;
 import com.example.fastlms.course.mapper.CourseMapper;
 import com.example.fastlms.course.model.CourseInput;
 import com.example.fastlms.course.model.CourseParam;
+import com.example.fastlms.course.model.ServiceResult;
+import com.example.fastlms.course.model.TakeCourseInput;
 import com.example.fastlms.course.repository.CourseRepository;
+import com.example.fastlms.course.repository.TakeCourseRepository;
 import com.example.fastlms.course.service.CourseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +28,7 @@ public
 class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
+    private final TakeCourseRepository takeCourseRepository;
     private final CourseMapper courseMapper;
 
     private LocalDate getLocalDate(String value) {
@@ -150,5 +155,57 @@ class CourseServiceImpl implements CourseService {
         }
 
         return null;
+    }
+
+    @Override
+    public CourseDto frontDetail(long id) {
+
+        Optional<Course> optionalCourse = courseRepository.findById(id);
+
+        if (optionalCourse.isPresent()) {
+            return CourseDto.of(optionalCourse.get());
+        }
+        return null;
+    }
+
+    @Override
+    public ServiceResult req(TakeCourseInput takeCourseInput) {
+
+        ServiceResult result = new ServiceResult();
+
+        Optional<Course> optionalCourse = courseRepository.findById(takeCourseInput.getCourseId());
+        if (!optionalCourse.isPresent()) {
+            result.setResult(false);
+            result.setMessage("강좌정보가 존재하지 않습니다.");
+            return result;
+        }
+
+        Course course = optionalCourse.get();
+
+        // 이미 신청정보가 있는지 확인 필요
+        String[] statusList = {TakeCourse.STATUS_REQ, TakeCourse.STATUS_COMPLETE};
+        long count = takeCourseRepository.countByCourseIdAndUserIdAndStatusIn(
+                course.getId(), takeCourseInput.getUserId(), Arrays.asList(statusList)
+        );
+
+        if (count > 0) {
+            result.setResult(false);
+            result.setMessage("이미 신청한 강좌정보가 존재합니다.");
+            return result;
+        }
+
+        TakeCourse takeCourse = TakeCourse.builder()
+                .courseId(course.getId())
+                .userId(takeCourseInput.getUserId())
+                .payPrice(course.getSalePrice())
+                .status(TakeCourse.STATUS_REQ)
+                .regDt(LocalDateTime.now())
+                .build();
+        takeCourseRepository.save(takeCourse);
+
+        result.setResult(true);
+        result.setMessage("");
+
+        return result;
     }
 }

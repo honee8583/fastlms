@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -45,5 +46,14 @@ public class CourseController extends BaseController{
         model.addAttribute("courseTotalCount", courseTotalCount);
 
         return "course/index";
+    }
+
+    @GetMapping("/course/{id}")
+    public String courseDetail(Model model, CourseParam courseParam) {
+
+        CourseDto detail = courseService.frontDetail(courseParam.getId());
+        model.addAttribute("detail", detail);
+
+        return "course/detail";
     }
 }
