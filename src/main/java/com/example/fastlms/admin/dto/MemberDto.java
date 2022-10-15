@@ -4,6 +4,7 @@ import com.example.fastlms.member.entity.Member;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -17,6 +18,7 @@ public class MemberDto {
     private String userName;
     private String phone;
     private LocalDateTime regDt;
+    private LocalDateTime upDt;
 
     private String emailAuthKey;
     private boolean emailAuthYn;
@@ -27,6 +29,10 @@ public class MemberDto {
 
     private boolean adminYn;
     private String userStatus;
+
+    private String zipcode;
+    private String addr;
+    private String addrDetail;
 
     // additional Column
     private long totalCount;    // 데이터 총 개수
@@ -39,6 +45,7 @@ public class MemberDto {
                 .phone(member.getPhone())
 //                .password(member.getPassword())
                 .regDt(member.getRegDt())
+                .upDt(member.getUpDt())
                 .emailAuthYn(member.isEmailAuthYn())
                 .emailAuthDt(member.getEmailAuthDt())
                 .emailAuthKey(member.getEmailAuthKey())
@@ -46,6 +53,23 @@ public class MemberDto {
                 .resetPasswordLimitDt(member.getResetPasswordLimitDt())
                 .adminYn(member.isAdminYn())
                 .userStatus(member.getUserStatus())
+                .zipcode(member.getZipcode())
+                .addr(member.getAddr())
+                .addrDetail(member.getAddrDetail())
                 .build();
+    }
+
+    public String getRegDtText() {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return regDt != null ? regDt.format(formatter) : "";
+    }
+
+    public String getUpDtText() {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return upDt != null ? upDt.format(formatter) : "";
     }
 }

@@ -11,4 +11,6 @@ import lombok.*;
 public class TakeCourseInput {
     private Long courseId;
     private String userId;
+
+    private long takeCourseId;  // 수강취소신청을 위한 아이디값
 }

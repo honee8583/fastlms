@@ -4,6 +4,7 @@ import com.example.fastlms.admin.dto.MemberDto;
 import com.example.fastlms.admin.mapper.MemberMapper;
 import com.example.fastlms.admin.model.MemberParam;
 import com.example.fastlms.component.MailComponents;
+import com.example.fastlms.course.model.ServiceResult;
 import com.example.fastlms.member.entity.Member;
 import com.example.fastlms.member.exception.MemberEmailNotAuthenticatedException;
 import com.example.fastlms.member.exception.MemberStopUserException;
@@ -11,6 +12,7 @@ import com.example.fastlms.member.model.MemberInput;
 import com.example.fastlms.member.model.ResetPasswordInput;
 import com.example.fastlms.member.repository.MemberRepository;
 import com.example.fastlms.member.service.MemberService;
+import com.example.fastlms.util.PasswordUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,9 +38,6 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberMapper memberMapper;
 
-    /**
-     * 회원 가입
-     */
     @Override
     public boolean register(MemberInput parameter) {
         Optional<Member> result =
@@ -77,9 +76,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * uuid에 해당하는 계정을 활성화
-     */
     @Override
     public boolean emailAuth(String uuid) {
 
@@ -103,9 +99,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * 입력한 이메일로 비밀번호 초기화 정보 메일을 전송
-     */
     @Override
     public boolean sendResetPassword(ResetPasswordInput resetPasswordInput) {
         Optional<Member> optionalMember =
@@ -137,9 +130,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * 입력받은 uuid에 대해서 password로 초기화 진행
-     */
     @Override
     public boolean resetPassword(String id, String password) {
         Optional<Member> optionalMember =
@@ -168,9 +158,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * 입력받은 uuid 유효성 검사
-     */
     @Override
     public boolean checkResetPassword(String uuid) {
         Optional<Member> optionalMember =
@@ -193,9 +180,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * 회원 목록 리턴 (관리자에서만 사용가능)
-     */
     @Override
     public List<MemberDto> list(MemberParam parameter) {
 
@@ -214,9 +198,6 @@ public class MemberServiceImpl implements MemberService {
         return list;
     }
 
-    /**
-     * 회원 상세 정보
-     */
     @Override
     public MemberDto detail(String userId) {
         Optional<Member> optionalMember = memberRepository.findById(userId);
@@ -229,9 +210,6 @@ public class MemberServiceImpl implements MemberService {
         return MemberDto.of(member);
     }
 
-    /**
-     * 회원 계정 상태 변경
-     */
     @Override
     public boolean updateStatus(String userId, String userStatus) {
         Optional<Member> optionalMember = memberRepository.findById(userId);
@@ -247,9 +225,6 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    /**
-     * 회원 비밀번호 초기화
-     */
     @Override
     public boolean updatePassword(String userId, String password) {
         Optional<Member> optionalMember = memberRepository.findById(userId);
@@ -267,6 +242,85 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public ServiceResult updateMember(MemberInput memberInput) {
+        String userId = memberInput.getUserId();
+
+        Optional<Member> optionalMember =
+                memberRepository.findById(userId);
+        if (!optionalMember.isPresent()) {
+            return new ServiceResult(false, "회원 정보가 존재하지 않습니다.");
+        }
+
+        Member member = optionalMember.get();
+
+        member.setPhone(memberInput.getPhone());
+        member.setZipcode(memberInput.getZipcode());
+        member.setAddr(memberInput.getAddr());
+        member.setAddrDetail(memberInput.getAddrDetail());
+        member.setUpDt(LocalDateTime.now());
+        memberRepository.save(member);
+
+        return new ServiceResult(true);
+    }
+
+    @Override
+    public ServiceResult updateMemberPassword(MemberInput memberInput) {
+
+        String userId = memberInput.getUserId();
+        Optional<Member> optionalMember =
+                memberRepository.findById(userId);
+        if (!optionalMember.isPresent()) {
+            return new ServiceResult(false, "회원 정보가 존재하지 않습니다.");
+        }
+
+        Member member = optionalMember.get();
+
+        if (!PasswordUtils.equals(memberInput.getPassword(), member.getPassword())) {
+            return new ServiceResult(false, "비밀번호가 일치하지 않습니다.");
+        }
+
+        String encPassword = PasswordUtils.encPassword(memberInput.getPassword());
+        member.setPassword(encPassword);
+        memberRepository.save(member);
+
+        return new ServiceResult(true);
+    }
+
+    @Override
+    public ServiceResult withdraw(String userId, String password) {
+
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if (!optionalMember.isPresent()) {
+            return new ServiceResult(false, "회원정보가 존재하지 않습니다.");
+        }
+
+        Member member = optionalMember.get();
+
+        if (!PasswordUtils.equals(password, member.getPassword())) {
+            return new ServiceResult(false, "비밀번호가 일치하지 않습니다.");
+        }
+
+        member.setUserName("삭제회원");
+        member.setPhone("");
+        member.setPassword("");
+        member.setRegDt(null);
+        member.setUpDt(null);
+        member.setEmailAuthYn(false);
+        member.setEmailAuthDt(null);
+        member.setEmailAuthKey("");
+        member.setResetPasswordKey("");
+        member.setResetPasswordLimitDt(null);
+        member.setUserStatus(Member.MEMBER_STATUS_WITHDRAW);
+        member.setZipcode("");
+        member.setAddr("");
+        member.setAddrDetail("");
+
+        memberRepository.save(member);
+
+        return new ServiceResult(true);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> optionalMember = memberRepository.findById(username);
         if (!optionalMember.isPresent()) {
@@ -281,6 +335,10 @@ public class MemberServiceImpl implements MemberService {
 
         if (member.getUserStatus().equals(Member.MEMBER_STATUS_STOPPED)) {
             throw new MemberStopUserException("정지된 회원 입니다.");
+        }
+
+        if (member.getUserStatus().equals(Member.MEMBER_STATUS_WITHDRAW)) {
+            throw new MemberStopUserException("탈퇴한 회원 입니다.");
         }
 
         List<GrantedAuthority>  grantedAuthorityList = new ArrayList<>();

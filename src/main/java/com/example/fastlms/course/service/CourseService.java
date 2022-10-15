@@ -48,4 +48,9 @@ public interface CourseService {
      * 수강신청
      */
     ServiceResult req(TakeCourseInput takeCourseInput);
+
+    /**
+     * 전체 강좌 목록
+     */
+    List<CourseDto> listAll();
 }

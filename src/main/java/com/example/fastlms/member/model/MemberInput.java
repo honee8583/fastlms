@@ -13,4 +13,10 @@ public class MemberInput {
     private String userName;
     private String password;
     private String phone;
+
+    // 회원정보수정
+    private String newPassword;
+    private String zipcode;
+    private String addr;
+    private String addrDetail;
 }
